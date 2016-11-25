@@ -4,19 +4,11 @@
  *
  * Script to help finding compromised addons & files in a MODX Evolution installation 
  * 
- * @description Upload to /manager and call via browser - initial password is "changeme" (Line 18) 
+ * @description Upload to /manager and call via browser - initial password is "changeme" (Line 16) 
  * @version 0.1
  * @author Deesen
- * @lastupdate 2016-11-24
+ * @lastupdate 2016-11-25
  * 
- * @todo: Fix UTF-8 support for highlighting
- * @todo: Refactor renderSummary / Highlighting ?
- * @todo: Add options / pre-selections of RegEx-strings or enter manual
- * 
- * @todo: Requiring RegExes to match strings like
- *    <?php            $
- *    eval/*whatever* /(
- *    
  **/
 
 class EvoCheck {
@@ -161,7 +153,7 @@ class EvoCheck {
 	function passwordWarning() {
 		echo $this->password == 'changeme' ? '<br/>
 		<ul class="list-group">
-		  <li class="list-group-item list-group-item-danger"><b>Security issue! Please change your password in Line 18!</b></li>
+		  <li class="list-group-item list-group-item-danger"><b>Security issue! Please change your password in Line 16!</b></li>
 		</ul>' : '';
 	}
 
