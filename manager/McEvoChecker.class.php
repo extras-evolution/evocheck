@@ -41,7 +41,7 @@ class McEvoChecker{
 				$hash='';
 				$itemRel=str_replace(MODX_BASE_PATH,'',$item);
 				if(is_dir($item)){
-					if(!in_array($itemRel),$params['excludeFolders'])){
+					if(!in_array($itemRel,$params['excludeFolders'])){
 						$hash=$this->check(array(
 							'startFolder'=>$item,
 							'excludeExtensions'=>$params['excludeExtensions'],
