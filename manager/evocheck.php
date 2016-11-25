@@ -98,7 +98,7 @@ class EvoCheck {
 		switch($this->frame) {
 			case 'mainframe':
 				echo $this->parseTpl($this->tpl["header"], array(
-					'title'=>'MODX Evolution Hack-Assistant',
+					'title'=>'EvoCheck v'.$this->version,
 				));
 				echo $this->parseTpl($this->tpl["frame_setup"]);
 				echo $this->parseTpl($this->tpl["footer"]);
@@ -254,15 +254,6 @@ class EvoCheck {
 	
 	function highlightSearchTerm($code)
 	{
-		// $code = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
-		/*
-		foreach($matches[0] as $index=>$match) {
-			// $term = htmlspecialchars($match[0], ENT_QUOTES, 'UTF-8');
-			$term = $match[0];
-			$code = str_replace($term, '<span class="highlighted">' . $term . '</span>', $code);
-		}
-		return $code;
-		*/
 		return preg_replace('/(*UTF8)'.$this->search_term.'/i', '<span class="highlighted">${0}</span>', $code);
 	}
 	
@@ -548,7 +539,7 @@ class EvoCheck {
 		// Left frame for Menu
 		$this->tpl['frame_left'] = '
 		<div class="container-fluid">
-			<h3><a href="[+basename+]?f=fr" target="fr">MODX Evolution</a><br/><small>Hack-Assistant v[+version+]</small></h3>
+			<h3><a href="[+basename+]?f=fr" target="fr">EvoCheck</a> <small>v[+version+]</small></h3>
 			<hr/>
 			<form action="[+basename+]" method="get" target="fr">
 				<div class="form-group">
