@@ -443,7 +443,7 @@ class EvoCheck {
 	function setTemplates()
 	{
 		$summary_length = $this->summary_length ? $this->summary_length : 100;
-		$search_term = $this->search_term ? $this->search_term : '(base64_|eval\s\(|system\s\(|shell_|exec\s\()';
+		$search_term = $this->search_term ? $this->search_term : '(base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;)';
 		$criteria_db = $this->criteria_db ? $this->criteria_db : array('plugin','snippet');
 		$criteria_f = $this->criteria_f ? $this->criteria_f : array();
 
