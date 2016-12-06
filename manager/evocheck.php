@@ -609,6 +609,7 @@ class EvoCheck {
 		<hr/>
 		<h4>Helpful resources</h4>
 		<ul>
+			<li><a href="https://www.adminer.org/" target="_blank">Adminer</a><p>phpMyAdmin-Alternative in one file</p></li>
 			<li><a href="https://revisium.com/aibo/" target="_blank">AI-BOLIT</a><p>Antivirus / Malware Scanner for Websites and Hosting</p></li>
 		</ul>
 		<hr/>
