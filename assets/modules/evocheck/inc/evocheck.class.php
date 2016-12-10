@@ -16,7 +16,8 @@ class EvoCheck {
 
 	var $password = 'changeme';
 	var $logged_in = false;
-
+	var $version = '0.2';
+	
 	var $db = null;
 	var $action = '';
 	var $summary_length = 0;
@@ -30,7 +31,7 @@ class EvoCheck {
 	var $criteriaSetup_f = array();
 	var $changed_after = 0;
 	var $url = '';
-	var $version = '0.2';
+	var $base_path = '';
 	var $templates = array();
 	var $module_params = array();
 	var $language = '';
@@ -46,6 +47,7 @@ class EvoCheck {
 			$this->basedir          = MODX_BASE_PATH;
 			$this->module_params    = $_module_params;
 			$this->url              = $_module_params['url'];
+			$this->base_path        = $_module_params['base_path'];
 			$this->inc_dir          = $_module_params['inc_dir'];
 			$this->action_dir       = $_module_params['action_dir'];
 			$this->processor_dir    = $_module_params['processor_dir'];
@@ -448,6 +450,7 @@ class EvoCheck {
 			'brand'=>'EvoCheck',
 			'version'=>$this->version,
 			'baseurl'=>$this->url,
+			'base_path'=>$this->base_path,
 			'action_id'=>$this->module_params['action_id'],
 			'module_id'=>$this->module_params['module_id'],
 			'json_lang'=>$this->json_lang
