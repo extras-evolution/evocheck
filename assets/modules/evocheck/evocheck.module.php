@@ -20,7 +20,7 @@ $_module_params = array(
 	'processor_dir'     => realpath( dirname(__FILE__) ) . DIRECTORY_SEPARATOR . 'processors' . DIRECTORY_SEPARATOR,
 	'tpl_dir'           => realpath( dirname(__FILE__) ) . DIRECTORY_SEPARATOR . 'tpl' . DIRECTORY_SEPARATOR,
 	'lang_dir'          => realpath( dirname(__FILE__) ) . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR,
-	'base_url'          => MODX_SITE_URL.'assets/modules/'.basename( dirname(__FILE__) ).'/',
+	'base_path'         => MODX_SITE_URL.'assets/modules/'.basename( dirname(__FILE__) ).'/',
 	'url'               => 'index.php?a='. $modx->manager->action .'&amp;id=' . $module_id,
 );
 
