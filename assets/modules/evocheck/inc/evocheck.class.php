@@ -1,20 +1,19 @@
 <?php
 /*
- * EvoCheck Standalone  
+ * EvoCheck  
  *
  * Script to help finding compromised addons & files in a MODX Evolution installation 
  * 
- * @description Upload to /manager and call via browser - initial password is "changeme" (Line 16) 
- * @version 0.1
+ * @description  
+ * @version 0.2
  * @author Deesen
- * @lastupdate 2016-11-25
+ * @lastupdate 2017-01-14
  * 
  **/
 if (IN_MANAGER_MODE != 'true') die('<h1>ERROR:</h1><p>Please use the MODx Content Manager instead of accessing this file directly.</p>');
 
 class EvoCheck {
 
-	var $password = 'changeme';
 	var $logged_in = false;
 	var $version = '0.2';
 	
@@ -41,26 +40,20 @@ class EvoCheck {
 	function __construct($_module_params=array())
 	{
 		global $modx, $database_user, $database_password, $database_server;
-		
-		// Determine settings for module- or standalone-mode
-		if(!empty($_module_params) && is_object($modx)) {
-			$this->basedir          = MODX_BASE_PATH;
-			$this->module_params    = $_module_params;
-			$this->url              = $_module_params['url'];
-			$this->base_path        = $_module_params['base_path'];
-			$this->inc_dir          = $_module_params['inc_dir'];
-			$this->action_dir       = $_module_params['action_dir'];
-			$this->processor_dir    = $_module_params['processor_dir'];
-			$this->tpl_dir          = $_module_params['tpl_dir'];
-			$this->lang_dir         = $_module_params['lang_dir'];
-		} else {
-			$this->module_params = NULL;
-			$this->url = basename(__FILE__);
-			$this->basedir = basename(__FILE__);
-			// @todo: $this->inc_dir = '';
-		}
+
+		// Determine settings
+		$this->basedir          = MODX_BASE_PATH;
+		$this->module_params    = $_module_params;
+		$this->url              = $_module_params['url'];
+		$this->base_path        = $_module_params['base_path'];
+		$this->inc_dir          = $_module_params['inc_dir'];
+		$this->action_dir       = $_module_params['action_dir'];
+		$this->processor_dir    = $_module_params['processor_dir'];
+		$this->tpl_dir          = $_module_params['tpl_dir'];
+		$this->lang_dir         = $_module_params['lang_dir'];
 		
 		// Set required PHP-Settings
+		// @todo: compatible with foreign charsets?? 
 		mb_internal_encoding("UTF-8");
 		mb_regex_encoding("UTF-8");
 
@@ -71,21 +64,6 @@ class EvoCheck {
 			exit();
 		}
 		
-		// Handle Login
-		if(!$_SESSION['evocheck_logged_in']) {
-			if (isset($_POST['pass'])) {
-				if ($_POST['pass'] == $this->password) {
-					$_SESSION['evocheck_logged_in'] = true;
-				}
-				else {
-					sleep(rand(2, 5)); // prevent bruit force attacks
-				}
-			}
-			else if (IN_MANAGER_MODE == 'true' && $modx->getLoginUserID() == 1) {
-				$_SESSION['evocheck_logged_in'] = true;
-			}
-		}
-
 		// Set default setup
 		$this->setTemplates();
 		
@@ -94,10 +72,10 @@ class EvoCheck {
 		$this->loadTranslations();
 		
 		// Set parameters or defaults
-		$this->logged_in = isset($_SESSION['evocheck_logged_in']) ? true : false;
+		$this->logged_in = $this->checkLoginStatus();
 		$this->action = isset($_REQUEST['ec_action']) ? $_REQUEST['ec_action'] : 'dashboard';
 		$this->summary_length = isset($_GET['ec_summary']) ? $_GET['ec_summary'] : 100;
-		$this->search_term = isset($_GET['ec_term']) ? $modx->removeSanitizeSeed($_GET['ec_term']) : '((\d+)\h*\/\h*(\d+)|base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;)';
+		$this->search_term = isset($_GET['ec_term']) ? $this->removeSanitizeSeed($_GET['ec_term']) : '((\d+)\h*\/\h*(\d+)|base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;)';
 
 		$this->criteria_db = isset($_GET['ec_criteria_db']) ? $_GET['ec_criteria_db'] : 
 			(isset($_GET['ec_term']) ? array() : array('plugin','snippet'));
@@ -114,12 +92,53 @@ class EvoCheck {
 	function __destruct() {
 		$this->db->close();
 	}
+	
+	function checkLoginStatus()
+	{
+		global $modx, $database_user, $database_password;
+		
+		// Trigger logout
+		if(isset($_GET['ec_logout'])) unset($_SESSION['evocheck_logged_in']);
+
+		// Standalone-mode -
+		if(EC_STANDALONE) {
+			if(isset($_SESSION['evocheck_logged_in']) && $_SESSION['evocheck_logged_in']) {
+				return true;
+			} else if (isset($_POST['user']) && isset($_POST['pass'])) {
+				if($_POST['user'] == $database_user && $_POST['pass'] == $database_password) {
+					$_SESSION['evocheck_logged_in'] = true;
+					return true;
+				} else {
+					sleep(rand(2, 5)); // prevent bruit force attacks
+				}
+			} 
+		// Module-mode
+		} else {
+			// Only admins are allowed to use module
+			if(!isset($_SESSION['mgrRole']) || $_SESSION['mgrRole'] != 1) {
+				die('<h1>ERROR:</h1>No permission.');
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	function removeSanitizeSeed($string)
+	{
+		if(EC_STANDALONE) {
+			return $string;
+		} else {
+			global $modx;
+			return $modx->removeSanitizeSeed($string);
+		}
+	}
 
 	function output()
 	{
+		// Show login-form for standalone-mode
 		if(!$this->logged_in) {
 			echo $this->parseTpl('header', array(
-				'title'=>'EvoCheck',
+				'title'=>'Login',
 			));
 			echo $this->parseTpl('login_form', array(
 				'title'=>'EvoCheck',
@@ -130,14 +149,13 @@ class EvoCheck {
 
 		switch($this->action) {
 			case 'dashboard':
-				echo $this->parseTpl('header', array( 'title'=>'' ));
+				echo $this->parseTpl('header', array( 'title'=>'Dashboard' ));
 				echo $this->parseTpl('navbar');
-				$this->passwordWarning();
-				echo $this->includeAction('dashboard.static');
+				$this->includeAction('dashboard.static');
 				echo $this->parseTpl('footer');
 				break;
 			case 'search':
-				echo $this->parseTpl('header', array( 'title'=>'Menu' ));
+				echo $this->parseTpl('header', array( 'title'=>'Search' ));
 				echo $this->parseTpl('navbar');
 				echo $this->parseTpl('search', array(
 					'search_term'=>$this->search_term,
@@ -150,7 +168,7 @@ class EvoCheck {
 				break;
 			case 'searchresults':
 				if($this->search_term) {
-					echo $this->parseTpl('header', array( 'title'=>'' ));
+					echo $this->parseTpl('header', array( 'title'=>'Search-Results' ));
 					$this->searchDb($this->search_term);
 					$this->searchFiles($this->search_term);
 					echo $this->parseTpl('footer');
@@ -189,13 +207,6 @@ class EvoCheck {
 		}
 	}
 	
-	function passwordWarning() {
-		echo $this->password == 'changeme' && is_null($this->module_params) ? '<br/>
-		<ul class="list-group">
-		  <li class="list-group-item list-group-item-danger"><b>Security issue! Please change your password in Line 16!</b></li>
-		</ul>' : '';
-	}
-
 	// @todo: Prepare for snippets, modules, chunks etc
 	function searchDb($term) {
 
@@ -453,7 +464,8 @@ class EvoCheck {
 			'base_path'=>$this->base_path,
 			'action_id'=>$this->module_params['action_id'],
 			'module_id'=>$this->module_params['module_id'],
-			'json_lang'=>$this->json_lang
+			'json_lang'=>$this->json_lang,
+			'display_standalone_logout_btn'=>!EC_STANDALONE ? 'style="display:none"' : ''
 		));
 
 		foreach($placeholders as $key=>$value)

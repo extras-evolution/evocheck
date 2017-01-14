@@ -17,6 +17,9 @@
                 <li><a href="[+baseurl+]&ec_action=search">[%navbar_search%]</a></li>
                 <!-- <li><a href="[+baseurl+]&ec_action=adminer">Adminer</a></li> -->
             </ul>
+            <ul class="nav navbar-nav navbar-right" [+display_standalone_logout_btn+]>
+                <li><a href="[+baseurl+]&ec_logout">[%navbar_logout%]</a></li>
+            </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>

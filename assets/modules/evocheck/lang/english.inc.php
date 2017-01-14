@@ -13,6 +13,7 @@
 
 
 $_lang["navbar_search"] = 'Search';
+$_lang["navbar_logout"] = 'Logout';
 $_lang["dashboard_critical_events"] = 'Plugins assigned to critical Events';
 $_lang["dashboard_modx_config_checkup"] = 'MODX Config Checkup';
 $_lang["dashboard_check_files_on_login"] = 'Check Files on Login';

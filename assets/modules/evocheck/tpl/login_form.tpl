@@ -3,7 +3,10 @@
             <br/>
             <form action="[+baseurl+]" method="post">
                 <div class="form-group">
-                    <input type="password" class="form-control text-center" name="pass" placeholder="Password">
+                    <input type="text" class="form-control text-center" name="user" placeholder="Database-User">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control text-center" name="pass" placeholder="Database-Password">
                 </div>
                 <br/>
                 <button type="submit" class="btn btn-primary">Login</button>
