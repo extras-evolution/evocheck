@@ -59,35 +59,39 @@ function renderModxConfigCheck($ec) {
 	}
 	$rs->free_result();
 
-	$_           = array();
-	$check_files = trim($config['check_files_onlogin']);
-	$check_files = explode("\n", $check_files);
-	$checksum    = unserialize($config['sys_files_checksum']);
-	foreach ($check_files as $file) {
-		$file     = trim($file);
-		$filePath = MODX_BASE_PATH . $file;
-		if (!is_file($filePath)) continue;
-		if (md5_file($filePath) != $checksum[$filePath]) $_[] = $file;
-	}
+	if(!empty($config)) {
+		$_           = array();
+		$check_files = trim($config['check_files_onlogin']);
+		$check_files = explode("\n", $check_files);
+		$checksum    = unserialize($config['sys_files_checksum']);
+		foreach ($check_files as $file) {
+			$file     = trim($file);
+			$filePath = MODX_BASE_PATH . $file;
+			if (!is_file($filePath)) continue;
+			if (md5_file($filePath) != $checksum[$filePath]) $_[] = $file;
+		}
 
-	$modxConfig = '<h4>Check Files on Login</h4>';
-	if (!empty($check_files)) {
-		$modxConfig .= '<ul>';
-		foreach ($check_files as $file) $modxConfig .= '<li>' . $ec->createViewSourceLink($file, 'file', $file) . '</li>';
-		$modxConfig .= '</ul>';
-	}
-	else {
-		$modxConfig .= '<strong class="text-warning">No files set to be checked on login.</strong>';
-	}
+		$modxConfig = '<h4>Check Files on Login</h4>';
+		if (!empty($check_files)) {
+			$modxConfig .= '<ul>';
+			foreach ($check_files as $file) $modxConfig .= '<li>' . $ec->createViewSourceLink($file, 'file', $file) . '</li>';
+			$modxConfig .= '</ul>';
+		}
+		else {
+			$modxConfig .= '<strong class="text-warning">No files set to be checked on login.</strong>';
+		}
 
-	$modxConfig .= '<h4>Changes found in</h4>';
-	if (!empty($_)) {
-		$modxConfig .= '<ul class="class="text-warning">';
-		foreach ($_ as $file) $modxConfig .= '<li>' . $ec->createViewSourceLink($file, 'file', $file) . '</li>';
-		$modxConfig .= '</ul>';
-	}
-	else {
-		$modxConfig .= '<span class="text-success">No changes found.</span>';
+		$modxConfig .= '<h4>Changes found in</h4>';
+		if (!empty($_)) {
+			$modxConfig .= '<ul class="class="text-warning">';
+			foreach ($_ as $file) $modxConfig .= '<li>' . $ec->createViewSourceLink($file, 'file', $file) . '</li>';
+			$modxConfig .= '</ul>';
+		}
+		else {
+			$modxConfig .= '<span class="text-success">No changes found.</span>';
+		}
+	} else {
+		$modxConfig = 'Settings "check_files_onlogin" and "sys_files_checksum" not found in database (old MODX-version?).';
 	}
 	return $ec->parsePlaceholders($modxConfig);
 }
