@@ -12,7 +12,7 @@
  * @internal	@guid evocheck92485832rt3
  * @internal	@shareparams 0
  * @internal	@modx_category Manager and Admin
- * @lastupdate  08/12/2016
+ * @lastupdate  15/01/2017
  */
 
 require(MODX_BASE_PATH.'assets/modules/evocheck/evocheck.module.php');
