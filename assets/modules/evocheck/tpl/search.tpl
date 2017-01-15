@@ -1,6 +1,5 @@
 <div class="container-fluid h100">
     <div id="search-form">
-        <div class="spacer-50px"></div>
         <form action="[+baseurl+]" method="get" target="results" class="ecform" id="ec_searchform">
             <br/>
             <input type="hidden" name="a" value="[+action_id+]"/>
