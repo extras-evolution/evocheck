@@ -7,7 +7,7 @@
  * @description  
  * @version 0.2
  * @author Deesen
- * @lastupdate 2017-01-14
+ * @lastupdate 2017-01-15
  * 
  **/
 if (IN_MANAGER_MODE != 'true') die('<h1>ERROR:</h1><p>Please use the MODx Content Manager instead of accessing this file directly.</p>');
@@ -181,8 +181,21 @@ class EvoCheck {
 				echo $this->viewSourcecode($this->search_term, $_GET['ec_type'], $_GET['ec_id']);
 				echo $this->parseTpl('footer');
 				break;
+			case 'indexhtm':
+				echo $this->parseTpl('header', array('title'=>'Check index.htm'));
+				echo $this->parseTpl('navbar');
+				$this->includeAction('server.indexhtm');
+				echo $this->parseTpl('footer');
+
+				break;
 			case 'adminer':
-				// @todo: Add https://www.adminer.org/en/
+				// @todo: add adminer
+				echo $this->parseTpl('header', array('title'=>'Loading Adminer'));
+				echo $this->parseTpl('navbar');
+				echo 'Not ready';
+				// $this->includeAction('adminer.loader');
+				echo $this->parseTpl('footer');
+				
 				break;
 				
 			////////////////////////////////////////////
@@ -365,7 +378,7 @@ class EvoCheck {
 
 	function renderElementButtons($type, $id)
 	{
-		return $this->parsePlaceholders('<a href="[+baseurl+]" data-action="delete" data-type="'.$type.'" data-id="'.$id.'" class="btn btn-xs btn-danger ajax">[%btn_delete%]</a>');
+		return $this->parsePlaceholders('<a href="[+baseurl+]" data-action="delete" data-type="'.$type.'" data-id="'.$id.'" class="btn btn-primary btn-xs ajax">[%btn_delete%]</a>');
 	}
 	
 	function renderFileDetails($file)
@@ -465,7 +478,9 @@ class EvoCheck {
 			'action_id'=>$this->module_params['action_id'],
 			'module_id'=>$this->module_params['module_id'],
 			'json_lang'=>$this->json_lang,
-			'display_standalone_logout_btn'=>!EC_STANDALONE ? 'style="display:none"' : ''
+			'display_standalone_logout_btn'=>!EC_STANDALONE ? 'style="display:none"' : '',
+			'body_class_sa'=>EC_STANDALONE ? 'standalone' : '',
+			'REQUEST_URI'=>$_SERVER['REQUEST_URI']
 		));
 
 		foreach($placeholders as $key=>$value)
@@ -491,6 +506,23 @@ class EvoCheck {
 		
 		return $statement;
 	}
+	
+	function getSystemSettings($settings=false)
+	{
+		$in = '';
+		if(!empty($settings)) {
+			$settings = !is_array($settings) ? array($settings) : $settings;
+			$in = "WHERE setting_name IN ('". implode("','", $settings) . "')";
+		}
+		$query  = $this->parseSqlStatement("SELECT setting_name, setting_value FROM [+prefix+]system_settings {$in};");
+		$rs     = $this->db->query($query);
+		$config = array();
+		while ($c = $rs->fetch_assoc()) {
+			$config[$c['setting_name']] = $c['setting_value'];
+		}
+		$rs->free_result();
+		return $config;
+	}
 
 	function renderCheckboxes($name, $values, $actives=array())
 	{
@@ -502,6 +534,21 @@ class EvoCheck {
 			$output .= '<div class="checkbox inline"><label><input name="' . $name . '[]" value="' . $value . '" type="checkbox"'. $checked .'> ' . $criteria['label'] . '</label></div>';
 		}
 		return $output;
+	}
+	
+	function renderStatusLabel($errorClass, $msg='') {
+		if(is_int($errorClass)) {
+			switch($errorClass) {
+				case 1:
+					$errorClass = 'success';
+					$msg = 'OK';
+					break;
+				case 0:
+					$errorClass = 'danger';
+					$msg = 'Error';
+			}
+		}
+		return '<span class="label label-'.$errorClass.'">'.$msg.'</span>';
 	}
 	
 	function loadTranslations()
