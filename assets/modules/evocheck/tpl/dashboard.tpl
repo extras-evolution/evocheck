@@ -1,5 +1,4 @@
 <div class="container-fluid">
-    <div class="spacer-50px"></div>
     <div class="row">
         <div class="col-sm-6">
             <h3>[%dashboard_critical_events%]</h3>
@@ -9,7 +8,9 @@
         <div class="col-sm-6">
             <h3>[%dashboard_modx_config_checkup%]</h3>
             <hr/>
-            [+modx_configuration+]
+            [+check_files_on_login+]
+            
+            [+system_setting_paths+]
         </div>
     </div>
     <hr/>

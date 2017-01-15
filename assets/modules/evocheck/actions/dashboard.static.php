@@ -25,32 +25,35 @@ function renderCriticalEvents($ec) {
 	$query = $ec->parseSqlStatement($select);
 
 	if ($rs = $ec->db->query($query)) {
-		$insideUl           = 0;
+		$output = '<table class="table table-bordered table-hover">';
+		
 		$preEvt             = '';
-		$criticalEventsList = '';
 		while ($plugins = $rs->fetch_assoc()) {
 			if ($preEvt !== $plugins['evtid']) {
-				$criticalEventsList .= $insideUl ? '</ul>' : '';
-				$criticalEventsList .= '<h4>' . $plugins['evtname'] . ' [' . $plugins['evtid'] . ']</h4><ul>';
-				$insideUl = 1;
+				$output .= '<tr><td colspan="2"><h5><b>' . $plugins['evtname'] . ' [' . $plugins['evtid'] . ']</b></h5></td></tr>';
 			}
 			$link = $ec->createViewSourceLink($plugins['name'] . ' [' . $plugins['pluginid'] . ']' . ($plugins['disabled'] ? ' <small>'.$ec->lang['element_disabled'].'</small>' : ''), 'plugin', $plugins['pluginid'], $plugins['disabled']);
 			$buttons = $ec->renderElementButtons('plugin', $plugins['pluginid']);
-			$criticalEventsList .= '<li id="res_plugin_'.$plugins['pluginid'].'">' . $link . '&nbsp;'. $buttons.'</li>';
+			
+			$output .= '<tr id="res_plugin_'.$plugins['pluginid'].'">';
+			$output .= '<td style="padding-left:20px">'. $link .'</td>';
+			$output .= '<td>'. $buttons .'</td>';
+			$output .= '</tr>';
+			
 			$preEvt = $plugins['evtid'];
 		}
-		if ($insideUl) $criticalEventsList .= '</ul>';
+		$output .= '</table>';
 		$rs->free_result();
 	}
 	else {
-		$criticalEventsList = 'No results';
+		$output = 'No results';
 	}
-	return $ec->parsePlaceholders($criticalEventsList);
+	return $ec->parsePlaceholders($output);
 }
 
 /////////////////////////////////////////
 // modx_configuration
-function renderModxConfigCheck($ec) {
+function renderCheckFilesOnLogin($ec) {
 	$query  = $ec->parseSqlStatement("SELECT setting_name, setting_value FROM [+prefix+]system_settings WHERE setting_name IN ('check_files_onlogin','sys_files_checksum');");
 	$rs     = $ec->db->query($query);
 	$config = array();
@@ -59,45 +62,87 @@ function renderModxConfigCheck($ec) {
 	}
 	$rs->free_result();
 
+	$output = '<h4>Check Files on Login</h4>';
 	if(!empty($config)) {
-		$_           = array();
-		$check_files = trim($config['check_files_onlogin']);
-		$check_files = explode("\n", $check_files);
-		$checksum    = unserialize($config['sys_files_checksum']);
-		foreach ($check_files as $file) {
-			$file     = trim($file);
-			$filePath = MODX_BASE_PATH . $file;
-			if (!is_file($filePath)) continue;
-			if (md5_file($filePath) != $checksum[$filePath]) $_[] = $file;
-		}
-
-		$modxConfig = '<h4>Check Files on Login</h4>';
+		$output .= '<table class="table table-bordered table-hover">';
+		$output .= '<tr>';
+		$output .= '<th>[%path%]</th>';
+		$output .= '<th>[%status%]</th>';
+		$output .= '</tr>';
+		
+		$changedFiles = array();
+		$check_files  = trim($config['check_files_onlogin']);
+		$check_files  = explode("\n", $check_files);
+		$checksum     = unserialize($config['sys_files_checksum']);
 		if (!empty($check_files)) {
-			$modxConfig .= '<ul>';
-			foreach ($check_files as $file) $modxConfig .= '<li>' . $ec->createViewSourceLink($file, 'file', $file) . '</li>';
-			$modxConfig .= '</ul>';
-		}
-		else {
-			$modxConfig .= '<strong class="text-warning">No files set to be checked on login.</strong>';
-		}
+			foreach ($check_files as $file) {
+				$file     = trim($file);
+				$filePath = MODX_BASE_PATH . $file;
+				if (!is_file($filePath)) continue;
 
-		$modxConfig .= '<h4>Changes found in</h4>';
-		if (!empty($_)) {
-			$modxConfig .= '<ul class="class="text-warning">';
-			foreach ($_ as $file) $modxConfig .= '<li>' . $ec->createViewSourceLink($file, 'file', $file) . '</li>';
-			$modxConfig .= '</ul>';
+				if (!isset($checksum[$filePath])) {
+					$msg = 'Checksum not found';
+					$errorClass = 'danger';
+				} else if (md5_file($filePath) != $checksum[$filePath]) {
+					$msg = 'found changes';
+					$errorClass = 'danger';
+				} else {
+					$msg = 'OK';
+					$errorClass = 'success';
+				}
+
+				$output .= '<tr>';
+				$output .= '<td>'. $ec->createViewSourceLink($file, 'file', $file) .'</td>';
+				$output .= '<td>'. $ec->renderStatusLabel($errorClass, $msg) .'</td>';
+				$output .= '</tr>';
+			}
+		} else {
+			$output .= '<tr><td><strong class="text-warning">No files set to be checked on login.</strong></td></tr>';
 		}
-		else {
-			$modxConfig .= '<span class="text-success">No changes found.</span>';
-		}
+		$output .= '</table>';
 	} else {
-		$modxConfig = 'Settings "check_files_onlogin" and "sys_files_checksum" not found in database (old MODX-version?).';
+		$output .= '<p>Settings "check_files_onlogin" and "sys_files_checksum" not found in database (old MODX-version?).</p>';
 	}
-	return $ec->parsePlaceholders($modxConfig);
+	
+	return $ec->parsePlaceholders($output);
+}
+
+/////////////////////////////////////////
+// check system settings paths
+function renderCheckSystemSettingPaths($ec) {
+	$pathSettings = $ec->getSystemSettings(array('filemanager_path','rb_base_dir'));
+	
+	$output = '<h4>Check System-Setting Paths</h4>';
+	$output .= '<table class="table table-bordered table-hover">';
+	$output .= '<tr>';
+	$output .= '<th>[%system_setting%]</th>';
+	$output .= '<th>[%path%]</th>';
+	$output .= '<th>is_dir()</th>';
+	$output .= '<th>is_readable()</th>';
+	$output .= '<th>is_writeable()</th>';
+	$output .= '</tr>';
+	
+	foreach($pathSettings as $setting=>$path) {
+		
+		$is_dir = is_dir($path) ? 1 : 0;
+		$is_readable = is_readable($path) ? 1 : 0; 
+		$is_writeable =	is_writeable($path) ? 1 : 0;
+			
+		$output .= '<tr>';
+		$output .= '<td>'. $setting .'</td>';
+		$output .= '<td>'. $path .'</td>';
+		$output .= '<td>'. $ec->renderStatusLabel($is_dir) .'</td>';
+		$output .= '<td>'. $ec->renderStatusLabel($is_readable) .'</td>';
+		$output .= '<td>'. $ec->renderStatusLabel($is_writeable) .'</td>';
+		$output .= '</tr>';
+	}
+	$output .= '</table>';
+	return $output;
 }
 
 /////////////////////////////////////////
 echo $this->parseTpl('dashboard', array(
 	'critical_events'=>renderCriticalEvents($this),
-	'modx_configuration'=>renderModxConfigCheck($this)
+	'check_files_on_login'=>renderCheckFilesOnLogin($this),
+	'system_setting_paths'=>renderCheckSystemSettingPaths($this),
 ));
