@@ -426,7 +426,7 @@ class EvoCheck {
 	function setTemplates()
 	{
 		$summary_length = $this->summary_length ? $this->summary_length : 100;
-		$search_term = $this->search_term ? $this->search_term : '((\d+)\h*\/\h*(\d+)|base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;)';
+		$search_term = $this->search_term ? $this->search_term : '((\d+)\h*\/\h*(\d+)|base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;|\${.?\\\x47\\\x4c\\\x4f\\\x42\\\x41\\\x4c\\\x53.?})';
 		$criteria_db = $this->criteria_db ? $this->criteria_db : array('plugin','snippet');
 		$criteria_f = $this->criteria_f ? $this->criteria_f : array();
 
