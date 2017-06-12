@@ -658,10 +658,17 @@ class EvoCheck {
 
 }
 
-if(file_exists('includes/config.inc.php')) {
-	require('includes/config.inc.php');
-} else {
-	exit('EvoCheck works only inside directory /manager.');
+if(file_exists('assets/cache/siteManager.php')) {
+  require('assets/cache/siteManager.php');
+  if(file_exists(MGR_DIR.'/includes/config.inc.php')) {
+    require(MGR_DIR.'/includes/config.inc.php');
+  }
+  else {
+    exit('There is no config file.');
+  }
+}
+else {
+  exit('EvoCheck works only in MODX root dir.');
 }
 
 mb_internal_encoding("UTF-8");
