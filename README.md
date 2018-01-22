@@ -1,5 +1,5 @@
 ### EvoCheck 0.2
-A small assistant to help resolving issues or finding compromised code in a MODX Evolution installation for the seldom case, it has been "hacked".
+A small assistant to help resolving issues or finding compromised code in an Evolution-CMS installation for the seldom case, it has been "hacked".
 
 ##### Features
 - Search DB (Plugins, Snippets etc) and Files for any string (RegEx supported)
@@ -29,7 +29,7 @@ To run EvoCheck standalone, open `http(s)://domain.xyz/evocheck-standalone.php` 
 #### Usage
 Experienced users will not need this manual. It is just a simple try of explanation to none-experienced users, to enable them start investigating on their own and get more help at https://github.com/modxcms/evolution .
 
-- call file directly via browser `http(s)://domain.xyz/manager/evocheck.php`, enter your password
+- Log into manager and run module "EvoCheck" or open `http(s)://domain.xyz/evocheck-standalone.php` and login with your database-details
 - search database & files and check for suspicious code, that in most cases is made not readable for humans by intention, like
   - `eval(base64_decode("aWYgKCFkZWZpbmVkKCdBTFJFQURZX1JVTl8xYmMyOWIzN.....`
   - `$nds3 = $ymdq98[7].$ymdq98[1].$ymdq98[8].$ymdq98[6]`
@@ -44,5 +44,5 @@ Experienced users will not need this manual. It is just a simple try of explanat
 - add searching "TemplateVars" as they also support `eval()` ? 
 
 #### History
-- v0.2 module and standalone-version
+- v0.2 module and standalone-version, added "index.html"-feature
 - v0.1 initial release (standalone only)
