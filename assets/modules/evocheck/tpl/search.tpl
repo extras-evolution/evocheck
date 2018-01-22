@@ -16,6 +16,7 @@
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><a class="setsearchterm" href="#">(base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;)</a></li>
+                                    <li><a class="setsearchterm" href="#">(base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;|\${.?\\\x47\\\x4c\\\x4f\\\x42\\\x41\\\x4c\\\x53.?})</a></li>
                                     <li><a class="setsearchterm" href="#">((\d+)\h*\/\h*(\d+)|base64_decode\h*\(|eval\h*\(|system\h*\(|shell_exec\h*\(|<\?php[^\n]{200,}|\$GLOBALS\[\$GLOBALS\[|;\h*\$GLOBALS|\$GLOBALS\h*;)</a></li>
                                 </ul>
                             </div>
