@@ -26,6 +26,10 @@ a.disabled { color:#666; }
 
 .radio .help-block { display:block; margin-left:20px; }
 
+table,
+.tab-content { background-color:#fff; }
+.tab-content { padding:1em; border:1px solid #DDDDDD; border-top:none; }
+
 @media (max-width:767px){
     /* .h100 { height:auto; max-height:none; } */
 }

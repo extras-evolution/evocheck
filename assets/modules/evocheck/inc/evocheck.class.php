@@ -5,17 +5,17 @@
  * Script to help finding compromised addons & files in a MODX Evolution installation 
  * 
  * @description  
- * @version 0.2
+ * @version 0.3
  * @author Deesen
- * @lastupdate 2017-01-15
+ * @lastupdate 2017-02-02
  * 
  **/
-if (IN_MANAGER_MODE != 'true') die('<h1>ERROR:</h1><p>Please use the MODx Content Manager instead of accessing this file directly.</p>');
+if (IN_MANAGER_MODE != 'true') die('<h1>ERROR:</h1><p>Please use the EVO Content Manager instead of accessing this file directly.</p>');
 
 class EvoCheck {
 
 	var $logged_in = false;
-	var $version = '0.2';
+	var $version = '0.3';
 	
 	var $db = null;
 	var $action = '';
@@ -51,6 +51,7 @@ class EvoCheck {
 		$this->processor_dir    = $_module_params['processor_dir'];
 		$this->tpl_dir          = $_module_params['tpl_dir'];
 		$this->lang_dir         = $_module_params['lang_dir'];
+		$this->integrity_dir    = $_module_params['integrity_dir'];
 		
 		// Set required PHP-Settings
 		// @todo: compatible with foreign charsets?? 
@@ -186,16 +187,18 @@ class EvoCheck {
 				echo $this->parseTpl('navbar');
 				$this->includeAction('server.indexhtm');
 				echo $this->parseTpl('footer');
-
 				break;
 			case 'adminer':
-				// @todo: add adminer
-				echo $this->parseTpl('header', array('title'=>'Loading Adminer'));
+				echo $this->parseTpl('header', array('title'=>'Adminer'));
 				echo $this->parseTpl('navbar');
-				echo 'Not ready';
-				// $this->includeAction('adminer.loader');
+				$this->includeAction('adminer');
 				echo $this->parseTpl('footer');
-				
+				break;
+			case 'integrity':
+				echo $this->parseTpl('header', array('title'=>'Files-Integrity'));
+				echo $this->parseTpl('navbar');
+				$this->includeAction('server.integrity');
+				echo $this->parseTpl('footer');
 				break;
 				
 			////////////////////////////////////////////
@@ -561,6 +564,12 @@ class EvoCheck {
 		}
 		$this->lang = $_lang;
 		$this->json_lang = json_encode($_lang);
+	}
+
+	function isJson($string, $returnData = false)
+	{
+		$data = json_decode($string, true);
+		return (json_last_error() == JSON_ERROR_NONE) ? ($returnData ? $data : true) : false;
 	}
 }
 
