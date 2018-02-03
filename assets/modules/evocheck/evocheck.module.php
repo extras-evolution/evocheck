@@ -1,5 +1,5 @@
 <?php
-if (IN_MANAGER_MODE != 'true') die('<h1>ERROR:</h1><p>Please use the MODx Content Manager instead of accessing this file directly.</p>');
+if (IN_MANAGER_MODE != 'true') die('<h1>ERROR:</h1><p>Please use the EVO Content Manager instead of accessing this file directly.</p>');
 
 define('EC_STANDALONE', !isset($modx->manager));
 
@@ -18,6 +18,7 @@ $_module_params = array(
 	'processor_dir'     => realpath( dirname(__FILE__) ) . DIRECTORY_SEPARATOR . 'processors' . DIRECTORY_SEPARATOR,
 	'tpl_dir'           => realpath( dirname(__FILE__) ) . DIRECTORY_SEPARATOR . 'tpl' . DIRECTORY_SEPARATOR,
 	'lang_dir'          => realpath( dirname(__FILE__) ) . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR,
+	'integrity_dir'     => realpath( dirname(__FILE__) ) . DIRECTORY_SEPARATOR . 'integrity' . DIRECTORY_SEPARATOR,
 	'base_path'         => MODX_SITE_URL.'assets/modules/'.basename( dirname(__FILE__) ).'/',
 	'url'               => !EC_STANDALONE
 							? 'index.php?a='. $modx->manager->action .'&amp;id=' . $module_id
