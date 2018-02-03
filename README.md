@@ -1,4 +1,4 @@
-### EvoCheck 0.2
+### EvoCheck 0.3
 A small assistant to help resolving issues or finding compromised code in an Evolution-CMS installation for the seldom case, it has been "hacked".
 
 ##### Features
@@ -11,6 +11,8 @@ A small assistant to help resolving issues or finding compromised code in an Evo
 - **v0.2**: Add customizable index.html to all directories (add, overwrite or delete all index.html < x bytes)
 - **v0.2**: Option to pre-select most common RegEx-strings (list will be extended by experience)
 - **v0.2**: Redesigned dashboard and search-module
+- **v0.3**: "Integrity Check" - Check for any files that might have been changed since creating of an Integrity-Image
+- **v0.3**: "Adminer" - now included directly in EvoCheck
 
 ##### Installation
 By uploading "EvoCheck" only when needed, it is guaranteed EvoCheck has not been compromised and is fully working. Evocheck can be used as a module, or in standalone-mode.
@@ -44,5 +46,6 @@ Experienced users will not need this manual. It is just a simple try of explanat
 - add searching "TemplateVars" as they also support `eval()` ? 
 
 #### History
+- v0.3 Added "Integrity Check" and "Adminer"
 - v0.2 module and standalone-version, added "index.html"-feature
 - v0.1 initial release (standalone only)
